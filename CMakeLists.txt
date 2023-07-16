@@ -10,9 +10,8 @@ option(BUILD_SHARED_LIBS "Whether to build a dynamic library" OFF)
 include(cmake/PreventInSourceBuild.cmake)
 prevent_in_source_build()
 
-if (NOT "${CMAKE_ASM_NASM_COMPILER_ID}" MATCHES "YASM")
-    message(FATAL_ERROR "-DCMAKE_ASM_NASM_ASM variable must point to a yasm assembler, currently points to: ${CMAKE_ASM_NASM_COMPILER_ID}")
-endif ()
+# Set the path to yasm
+set(CMAKE_ASM_NASM_COMPILER /path/to/yasm)  # Replace /path/to/yasm with the actual path to yasm
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     add_library(${PROJECT_NAME}_asm OBJECT asm/x64/iaesx64.s asm/x64/do_rdtsc.s)
@@ -21,7 +20,6 @@ elseif (CMAKE_SIZEOF_VOID_P EQUAL 4)
 else ()
     message(FATAL_ERROR "Only x86 and x64 targets are currently supported")
 endif ()
-
 
 if (UNIX)
     target_compile_options(${PROJECT_NAME}_asm PRIVATE -D__linux__)
@@ -67,6 +65,8 @@ install(EXPORT
         NAMESPACE IAESNI::
         )
 
+# Enable or disable tests
+option(LIBAESNI_ENABLE_TESTS "Enable tests for libaesni" OFF)
 
 if (LIBAESNI_ENABLE_TESTS)
     add_executable(test EXCLUDE_FROM_ALL test/test_libaesni.c)
